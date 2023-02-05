@@ -5,10 +5,10 @@ import { dummyTodos, todosAllowedUpdates } from './data/data.js'
 
 import { mongoose } from 'mongoose'
 
-import { dotenv } from 'dotenv'
+import * as dotenv from 'dotenv'
 
 dotenv.config();
-const PORT = process.env
+const { PORT, DB_USER, DB_PASSWORD, DB_HOST, DB_NAME } = process.env
 
 // server initialization
 const app = express();
