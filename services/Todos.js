@@ -6,7 +6,7 @@ export const getAllTodos = () => {
 }
 
 export const getOneTodo = (id) => {
-    return Todos.find({ _id: id })
+    return Todos.findOne({ _id: id })
 }
 
 export const addTodo = (todoTitle) => {

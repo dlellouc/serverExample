@@ -1,10 +1,10 @@
 
-import { getAllTodos, getOneTodo, updateTodo, deleteTodo } from "../services/Todos.js";
+import { addTodo, getAllTodos, getOneTodo, deleteTodo } from "../services/Todos.js";
 import { todosAllowedUpdates } from '../data/data.js'
 
 export const getAllTodosController = async (req, res) => {
     try {
-        const allTodos = await getAllTodos;
+        const allTodos = await getAllTodos();
         res.status(200).send(allTodos);
 
     } catch(error) {
@@ -68,7 +68,7 @@ export const updateTodoController = async (req, res) => {
 export const deleteTodoController = async (req, res) => {
     try {
         const { id } = req.params;
-        const deletedTodo = await deleteTodo;
+        const deletedTodo = await deleteTodo(id);
         if (!deletedTodo) {
             res.status(404).send({message: "no todo with such id"});
         }
