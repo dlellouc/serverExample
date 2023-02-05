@@ -18,7 +18,7 @@ export const getAllTodosController = async (req, res) => {
 export const addTodoController = async (req, res) => {
     try {
         const todoTitle = req.body.title;
-        const newTodo = addTodo(todoTitle);
+        const newTodo = await addTodo(todoTitle);
         res.status(200).send(newTodo);
 
     } catch(error) {
