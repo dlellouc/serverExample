@@ -6,6 +6,7 @@ import { dummyTodos, todosAllowedUpdates } from './data/data.js'
 import { mongoose } from 'mongoose'
 
 import * as dotenv from 'dotenv'
+import { addTodoController, deleteTodoController, getAllTodosController, updateTodoController } from './controllers/Todos.js'
 
 dotenv.config();
 const { PORT, DB_USER, DB_PASSWORD, DB_HOST, DB_NAME } = process.env
@@ -19,25 +20,6 @@ app.use(cors());
 mongoose.set('strictQuery', true);
 
 
-// schemas
-const TodoSchema = new mongoose.Schema({                
-    title: {
-        type: String,
-        required: true
-    },
-    isCompleted: {
-        type: Boolean,
-        default: false
-    },
-    dateCreated: {
-        type: Date,
-        default: Date.now()
-    }
-})
-
-
-// model
-const Todos = mongoose.model('Todos', TodoSchema);      // Todos = collection, row = document
 
 
 // routes
@@ -53,93 +35,26 @@ const Todos = mongoose.model('Todos', TodoSchema);      // Todos = collection, r
 //     res.send('5');
 // });
 
-app.get('/api/todos/getAllTodos', async (req, res) => {
-    try {
-        const allTodos = await Todos.find({});
-        res.status(200).send(allTodos);
-    } catch(error) {
-        console.log(error);
-        res.status(500).send({message:{error}});
-    }
-    // res.send(dummyTodos);
-})
-
-app.post('/api/todos/addTodo', async (req, res) => {
-    try {
-        const todoTitle = req.body.title;
-        const newTodo = new Todos({title: todoTitle}); // insertMany
-        await newTodo.save();
-        res.status(200).send(newTodo);
-    } catch(error) {
-        console.log(error);
-        res.status(500).send({message:{error}});
-    }
-    
-
-    // dummyTodos.push(todo);
-    // console.log(dummyTodos);
-    // res.send(dummyTodos);
-});
-
-app.put('/api/todos/updateTodo/:id', async (req, res) => {
-    const updates = Object.keys(req.body);
-    const isValidOperation = updates.every((update) => todosAllowedUpdates.includes(update));
-
-    if (!isValidOperation) {
-        res.status(400).send({ message: "Invalid updates" });
-    }
-
-    try {
-        const { id } = req.params;
-        const todo = await Todos.findOne({ _id: id });
-        if (!todo) {
-            res.status(404).send({ message: 'todo does not exist' });
-        }
-
-        updates.forEach((update) => (todo[update] = req.body[update]));
-        await todo.save();
-        res.status(200).send(todo);
-    } catch(error) {
-        console.log(error);
-        res.status(500).send({message:{error}});
-    }
-
-    // const newTitle = req.body.title;
-
-    // const clone = [...dummyTodos];      // not needed with db
-    
-    // const todoIndex = clone.findIndex((todo) => todo.id === +id);
-    // clone[todoIndex].title = newTitle;
-    
-    // res.send(clone);
+// app.get('/api/todos/getAllTodos', async (req, res) => {      // before models, services, controllers folders
+//     try {
+//         const allTodos = await Todos.find({});
+//         res.status(200).send(allTodos);
+//     } catch(error) {
+//         console.log(error);
+//         res.status(500).send({message:{error}});
+//     }
+//     // res.send(dummyTodos);
+// })
 
 
-})
+// routes for todos
+app.get('/api/todos/getAllTodos', getAllTodosController);
 
-app.delete('/api/todos/deleteTodo/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const deletedTodo = await Todos.findOneAndDelete({_id: id});
-        if (!deletedTodo) {
-            res.status(404).send({message: "no todo with such id"});
-        }
-        res.status(200).send(deletedTodo);
-    } catch(error) {
-        console.log(error);
-        res.status(500).send({message:error});
-    }
-    // const { id } = req.params;
+app.post('/api/todos/addTodo', addTodoController);
 
-    // const clone = [...dummyTodos];      // not needed with db
-    
-    // const todoIndex = clone.findIndex((todo) => todo.id === +id);
-    // if (todoIndex === -1) {
-    //     res.status(404).send({message:'no todo at such index'});
-    // }
-    // clone.splice(todoIndex, 1);
-    
-    // res.send(clone);
-})
+app.put('/api/todos/updateTodo/:id', updateTodoController);
+
+app.delete('/api/todos/deleteTodo/:id', deleteTodoController);
 
 
 // without mongodb atlas :
