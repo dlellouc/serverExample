@@ -58,24 +58,23 @@ app.delete('/api/todos/deleteTodo/:id', deleteTodoController);
 
 
 // without mongodb atlas :
-mongoose.connect('mongodb://127.0.0.1:27017/todos', {               // todos = db
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
-
-// listener at the bottom which concludes the listening function to fulfill all of the requests
-app.listen(PORT, () => {
-    console.log('server listening at port *')
-});
-
-
-// with mongodb atlas :
-// mongoose.connect('mongodb at atlas', {               
+// mongoose.connect('mongodb://127.0.0.1:27017/todos', {               // todos = db
 //     useNewUrlParser: true,
 //     useUnifiedTopology: true
-// }, (info) => {
-//     console.log('info ?', info);
-//     app.listen(PORT, () => {
-//         console.log('server listening at port *')
-//     })
 // })
+
+// // listener at the bottom which concludes the listening function to fulfill all of the requests
+// app.listen(PORT, () => {
+//     console.log('server listening at port *')
+// });
+
+// with mongodb atlas :
+mongoose.connect(`mongodb+srv://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/${DB_NAME}`, {               
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+}, (info) => {
+    console.log('info ?', info);
+    app.listen(PORT, () => {
+        console.log('server listening at port *')
+    })
+})

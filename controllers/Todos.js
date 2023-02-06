@@ -37,23 +37,24 @@ export const updateTodoController = async (req, res) => {
 
     if (!isValidOperation) {
         res.status(400).send({ message: "Invalid updates" });
-    }
-
-    try {
-        const { id } = req.params;
-        const todo = await getOneTodo(id);
-        if (!todo) {
-            res.status(404).send({ message: 'todo does not exist' });
+    } else {
+        try {
+            const { id } = req.params;
+            const todo = await getOneTodo(id);
+            if (!todo) {
+                res.status(404).send({ message: 'todo does not exist' });
+            } else {
+                updates.forEach((update) => (todo[update] = req.body[update]));
+                await todo.save();
+                res.status(200).send(todo);
+            }   
+    
+        } catch(error) {
+            console.log(error);
+            res.status(500).send({message:{error}});
         }
-
-        updates.forEach((update) => (todo[update] = req.body[update]));
-        await todo.save();
-        res.status(200).send(todo);
-
-    } catch(error) {
-        console.log(error);
-        res.status(500).send({message:{error}});
     }
+
 
     // const newTitle = req.body.title;
 
@@ -71,8 +72,9 @@ export const deleteTodoController = async (req, res) => {
         const deletedTodo = await deleteTodo(id);
         if (!deletedTodo) {
             res.status(404).send({message: "no todo with such id"});
+        } else {
+            res.status(200).send(deletedTodo);
         }
-        res.status(200).send(deletedTodo);
 
     } catch(error) {
         console.log(error);
